@@ -10,13 +10,16 @@ function validarCredenciales(credenciales){
 }
 
 function estampillar(body){
+  if(Object.keys(body).length != 3){
+    return { "status": 500, "code": "Expected fields estatuto, numeroExpediente, credenciales" }
+  }
+
   const decodedCredentials = jwt.decode(body.credenciales);
   if(!validarCredenciales(decodedCredentials)) {
-    return false
+    return { "status": 403, "code": "Forbidden"}
   }
-  console.log(process.env.PRIVATE_KEY)
   const token = jwt.sign(body, process.env.PRIVATE_KEY, { algorithm: 'HS256'})
-  return token
+  return { "status": 200, 'estampilla': token}
 }
 
 router.post('/estampillado', function(req, res, next) {
@@ -27,8 +30,8 @@ router.post('/estampillado', function(req, res, next) {
       "credenciales": JWT_TOKEN 
     }
   */
-  let estampilla = estampillar(req.body) || {}
-  res.json({'estampilla': estampilla});
+  const response = estampillar(req.body) || {}
+  res.json(response);
 });
 
 module.exports = router;

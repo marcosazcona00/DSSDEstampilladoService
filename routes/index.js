@@ -14,7 +14,8 @@ function estampillar(body){
   if(!validarCredenciales(decodedCredentials)) {
     return false
   }
-  const token = jwt.sign(body, ENV.PRIVATE_KEY, { algorithm: 'HS256'})
+  console.log(process.env.PRIVATE_KEY)
+  const token = jwt.sign(body, process.env.PRIVATE_KEY, { algorithm: 'HS256'})
   return token
 }
 
@@ -39,3 +40,6 @@ module.exports = router;
 
 //curl -X POST https://floating-oasis-96990.herokuapp.com/estampillado -d '{"estatuto": "/home/Escritorio/", "numeroExpediente": 1, "credenciales": "JWDSA987-DSAd_AS"}' -H  "Content-Type: application/json"
 //curl -X POST localhost:3000/estampillado -d '{"estatuto": "/home/Escritorio/", "numeroExpediente": 1, "credenciales": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9lc3RhbXBpbGxhZG8iOjEsInBhc3N3b3JkIjoiYWVheW9zb3lzYWJhbGVybyIsImlhdCI6MTUxNjIzOTAyMn0.-j_pFuANumQ-QRQrtMAqLeN1OSGyfREvxTzRhgIi5Ag"}' -H  "Content-Type: application/json"
+
+
+//curl -X POST https://floating-oasis-96990.herokuapp.com/estampillado -d '{"estatuto": "/home/Escritorio/", "numeroExpediente": 1, "credenciales": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9lc3RhbXBpbGxhZG8iOjEsInBhc3N3b3JkIjoiYWVheW9zb3lzYWJhbGVybyIsImlhdCI6MTUxNjIzOTAyMn0.-j_pFuANumQ-QRQrtMAqLeN1OSGyfREvxTzRhgIi5Ag"}' -H  "Content-Type: application/json"

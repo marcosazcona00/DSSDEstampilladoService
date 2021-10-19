@@ -1,26 +1,22 @@
-var jwt = require('jsonwebtoken');
+let jwt = require('jsonwebtoken');
+let express = require('express');
+let router = express.Router();
 
-var express = require('express');
-var router = express.Router();
+const { request } = require('express');
+const ENV = require('dotenv').config().parsed
 
- 
- 
-
-function estampillar(body){
-  var decoded = jwt.decode(body.credenciales);
-  console.log(decoded)
-
-  return body
+function validarCredenciales(credenciales){
+  return true
 }
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-router.get('/estampillado', function(req, res, next) {
-  res.json({'hola': 2});
-});
+function estampillar(body){
+  const decodedCredentials = jwt.decode(body.credenciales);
+  if(!validarCredenciales(decodedCredentials)) {
+    return false
+  }
+  const token = jwt.sign(body, ENV.PRIVATE_KEY, { algorithm: 'HS256'})
+  return token
+}
 
 router.post('/estampillado', function(req, res, next) {
   /* 
@@ -30,15 +26,11 @@ router.post('/estampillado', function(req, res, next) {
       "credenciales": JWT_TOKEN 
     }
   */
-  console.log(req.body)
-
   let estampilla = estampillar(req.body) || {}
-
   res.json({'estampilla': estampilla});
 });
 
 module.exports = router;
-
 
 //Ejemplo 
 //curl -X POST localhost:3000/estampillado -d '{"key": "value"}' -H  "Content-Type: application/json"

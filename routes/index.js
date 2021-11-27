@@ -29,6 +29,12 @@ async function validarCredenciales(body){
   if(Object.keys(decodedCredentials).length != 2 || !Object.keys(decodedCredentials).includes("username") || !Object.keys(decodedCredentials).includes("password")){
     return {"status": 500, "code": "Wrong arguments"} 
   }
+
+  const decodedCredentials = jwt.decode(body.credenciales);
+  if(decodedCredentials.username != 'legales' && decodedCredentials.password != 'legales'){
+    return {"status": 403, "code": "Forbidden"} 
+  }
+
   const randomHash = await generateRandomHash()
   
   const username = decodedCredentials.username

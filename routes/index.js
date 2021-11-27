@@ -22,36 +22,44 @@ async function generateRandomHash(){
 }
 
 async function validarCredenciales(body){
+  console.log(Object.keys(body))
   if(Object.keys(body).length != 1 || !Object.keys(body).includes("credenciales")){
     return {"status": 500, "code": "Wrong arguments"}
   }
-  const decodedCredentials = jwt.decode(body.credenciales);
-  if(Object.keys(decodedCredentials).length != 2 || !Object.keys(decodedCredentials).includes("username") || !Object.keys(decodedCredentials).includes("password")){
-    return {"status": 500, "code": "Wrong arguments"} 
-  }
-  if(decodedCredentials.username != 'legales' && decodedCredentials.password != 'legales'){
-    return {"status": 403, "code": "Forbidden"} 
-  }
-
-  const randomHash = await generateRandomHash()
+  try {
+    const decodedCredentials = jwt.decode(body.credenciales);
+    console.log('Credenciales decodeadas ',decodedCredentials);
+    if(Object.keys(decodedCredentials).length != 2 || !Object.keys(decodedCredentials).includes("username") || !Object.keys(decodedCredentials).includes("password")){
+      return {"status": 500, "code": "Wrong arguments"} 
+    }
+    if(decodedCredentials.username != 'legales' && decodedCredentials.password != 'legales'){
+      return {"status": 403, "code": "Forbidden"} 
+    }
   
-  const username = decodedCredentials.username
-  let data = {}
-  data[username] = randomHash
-
-  fs.writeFileSync('tokens/tokens.json', JSON.stringify(data));
-  return {"status": 200, "token": randomHash  }
+    const randomHash = await generateRandomHash()
+    
+    const username = decodedCredentials.username
+    let data = {}
+    data[username] = randomHash
+  
+    fs.writeFileSync('tokens/tokens.json', JSON.stringify(data));
+    return {"status": 200, "token": randomHash  }
+  }catch {
+    return {"status": 501, "code": "Invalid Format"}
+  }
 }
 
 
 function estampillar(body){
   if(Object.keys(body).length != 4){
-    return { "status": 500, "code": "Expected fields estatuto, numeroExpediente, credenciales" }
+    return { "status": 500, "code": "Expected fields estatuto, numeroExpediente, credenciales, username" }
   }
 
   console.log(body)
   const tokensJSON = tokensContent()
-  if(!tokensJSON[body.username] || (tokensJSON[body.username] && tokensJSON[body.username] != body.token)){
+  console.log(tokensJSON)
+  console.log(body)
+  if(!tokensJSON[body.username] || (tokensJSON[body.username] && tokensJSON[body.username] != body.credenciales)){
     return {"status": 403, "code": "Forbidden invalid token"}
   }
 
@@ -60,10 +68,13 @@ function estampillar(body){
 
   const username = body.username
   let data = {}
-  data[username] = ""
-  fs.writeFileSync('tokens/tokens.json', JSON.stringify(data));
+  const hashQR = token.split('.')[2]
+  const url = `http://localhost:8000/SA/${hashQR}`
+  const qr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${url}`
+  // data[username] = ""
+  // fs.writeFileSync('tokens/tokens.json', JSON.stringify(data));
 
-  return { "status": 200, 'estampilla': token}
+  return { "status": 200, 'estampilla': token, 'qr': qr}
 }
 
 

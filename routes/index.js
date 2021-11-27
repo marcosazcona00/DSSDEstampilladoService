@@ -74,7 +74,7 @@ function estampillar(body){
   data[username] = ""
   fs.writeFileSync('tokens/tokens.json', JSON.stringify(data));
 
-  return { "status": 200, 'estampilla': token, 'qr': qr}
+  return { "status": 200, 'estampilla': token, 'qr': qr, 'hashQR': hashQR}
 }
 
 

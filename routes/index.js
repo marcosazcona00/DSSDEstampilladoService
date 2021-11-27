@@ -71,8 +71,8 @@ function estampillar(body){
   const hashQR = token.split('.')[2]
   const url = `http://localhost:8000/SA/${hashQR}`
   const qr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${url}`
-  // data[username] = ""
-  // fs.writeFileSync('tokens/tokens.json', JSON.stringify(data));
+  data[username] = ""
+  fs.writeFileSync('tokens/tokens.json', JSON.stringify(data));
 
   return { "status": 200, 'estampilla': token, 'qr': qr}
 }
